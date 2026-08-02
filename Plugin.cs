@@ -7,9 +7,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using JetBrains.Annotations;
-#if DEBUG
-using ServerSync;
-#endif
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,8 +17,8 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.0.9";
-        internal const string Author = "Azumatt";
+        internal const string ModVersion = "1.1.0";
+        internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
         private static string ContentFile = ModGUID + ".txt";
@@ -35,10 +33,6 @@ namespace ChangelogEditor
 
         public static readonly ManualLogSource ChangelogEditorLogger =
             BepInEx.Logging.Logger.CreateLogSource(ModName);
-#if DEBUG
-        private static readonly ConfigSync ConfigSync = new(ModGUID)
-            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
-#endif
         public enum Toggle
         {
             On = 1,
@@ -169,30 +163,6 @@ namespace ChangelogEditor
         internal static ConfigEntry<Toggle> overrideText = null!;
         internal static ConfigEntry<string> topicText = null!;
         internal static ConfigEntry<float> changelogWidth = null!;
-#if DEBUG
-        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description,
-            bool synchronizedSetting = true)
-        {
-            ConfigDescription extendedDescription =
-                new(
-                    description.Description +
-                    (synchronizedSetting ? " [Synced with Server]" : " [Not Synced with Server]"),
-                    description.AcceptableValues, description.Tags);
-            ConfigEntry<T> configEntry = Config.Bind(group, name, value, extendedDescription);
-            //var configEntry = Config.Bind(group, name, value, description);
-
-            SyncedConfigEntry<T> syncedConfigEntry = ConfigSync.AddConfigEntry(configEntry);
-            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
-
-            return configEntry;
-        }
-
-        private ConfigEntry<T> config<T>(string group, string name, T value, string description,
-            bool synchronizedSetting = true)
-        {
-            return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
-        }
-#else
         private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description)
         {
             ConfigEntry<T> configEntry = Config.Bind(group, name, value, description);
@@ -222,8 +192,6 @@ namespace ChangelogEditor
             entry.BoxedValue = GUILayout.TextArea((string)entry.BoxedValue, GUILayout.ExpandWidth(true),
                 GUILayout.ExpandHeight(true));
         }
-#endif
-
         private class ConfigurationManagerAttributes
         {
             [UsedImplicitly] public int? Order = null!;
