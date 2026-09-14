@@ -1,9 +1,9 @@
 {
   "name": "ChangelogEditor",
-  "version_number": "1.1.0",
+  "version_number": "1.1.1",
   "website_url": "https://github.com/Wacky-Mole/ChangelogEditor",
   "description": "A simple mod that allows you to change the changelog text at the main menu, or hide it entirely.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2202"
+    "denikson-BepInExPack_Valheim-5.4.2350"
   ]
 }

@@ -6,6 +6,15 @@ using UnityEngine.UI;
 
 namespace ChangelogEditor;
 
+[HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Start))]
+static class FejdStartupStartPatch
+{
+    static void Postfix()
+    {
+        ChangelogEditorPlugin.UpdateChangelogButton();
+    }
+}
+
 [HarmonyPatch(typeof(ChangeLog), nameof(ChangeLog.Start))]
 static class ChangeLogStartPatch
 {
@@ -65,7 +74,6 @@ public static class ChangeLogExtension
             __instance.m_textField.text = __instance.m_changeLog.text;
         }
 
-        __instance.gameObject.SetActive(ChangelogEditorPlugin.shouldShowChangelog.Value == ChangelogEditorPlugin.Toggle.On);
     }
 
     public static void UpdateTopicText(ChangeLog clog)

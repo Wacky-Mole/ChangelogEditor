@@ -1,6 +1,7 @@
 | `Version`   | `Update Notes`                                                                                                                                                          |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1.1.0       | - WackyMole Takeover                                                                                                                              |
+| 1.1.1       | - Deep North Update                                                                                                                                                     |
+| 1.1.0       | - WackyMole Takeover                                                                                                                                                    |
 | 1.0.9       | - Compile against latest, just in case.                                                                                                                                 |
 | 1.0.8       | - Compile against Ashlands                                                                                                                                              |
 | 1.0.7       | - Compile against Valheim 0.217.28                                                                                                                                      |

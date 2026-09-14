@@ -6,6 +6,15 @@
 
 ### `This is a client only mod!`
 
+<div style="text-align: center;">
+  <a href="https://www.survivalservers.com/services/game_servers/valheim/?ref=WackyMole">
+    <img
+      src="https://www.wackymole.com/hosts/WackySurvivalBanner.png"
+      alt="Valheim Server Hosting - Survival Servers"
+      style="display: inline-block; width: 768px; max-width: 100%; height: auto;">
+  </a>
+</div>
+
 ---
 
 The configuration file is located at `BepInEx/config/Azumatt.ChangelogEditor.cfg`
@@ -34,7 +43,7 @@ The ChangeLog supports using colors, so go wild? Examples below.
 
 ## WackyMole
 
-For questions or suggestions please join discord channel: [Odin Plus Team](https://discord.gg/odinplus) or my discord at [Wolf Den](https://discord.gg/uPjjH8y52j)
+For questions or suggestions please join discord channel: [Odin Plus Team](https://discord.gg/jkcJCq2sK5) or my discord at [Wolf Den](https://discord.gg/uPjjH8y52j)
 
 
 ### Previous Author: Azumatt

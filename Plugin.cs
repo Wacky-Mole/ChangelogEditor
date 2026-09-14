@@ -17,7 +17,7 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.1.0";
+        internal const string ModVersion = "1.1.1";
         internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -41,7 +41,8 @@ namespace ChangelogEditor
 
         public void Awake()
         {
-            shouldShowChangelog = config("1 - Changelog", "Should Show Changelog", Toggle.On, "If on, the changelog will be shown in the main menu. If off, it will not be shown.");
+            shouldShowChangelog = config("1 - Changelog", "Should Show Changelog", Toggle.On, "If on, the changelog button will be shown in the main menu. If off, it will not be shown.");
+            shouldShowChangelog.SettingChanged += UpdateChangelogButton;
             shouldChangeText = config("1 - Changelog", "Should Change Text", Toggle.On, $"If on, your configuration file's text will be added to the changelog. (at the top). This pulls from the {ContentFile} found in your config folder.");
             overrideText = config("1 - Changelog", "Override Changelog Text", Toggle.Off, "If on, only your custom text that is set will show in the changlog. This deletes the default changelog text.");
             topicText = TextEntryConfig("1 - Changelog", "Title Text", "Changelog", "Change the title text of the changelog. This is the text that shows up in the top of the changelog.");
@@ -68,7 +69,14 @@ namespace ChangelogEditor
         private void OnDestroy()
         {
             Config.Save();
+            shouldShowChangelog.SettingChanged -= UpdateChangelogButton;
             changelogWidth.SettingChanged -= UpdateChangelogWidth;
+        }
+
+        internal static void UpdateChangelogButton(object sender = null, EventArgs e = null)
+        {
+            if (FejdStartup.m_instance == null || FejdStartup.m_instance.m_showChangelogButton == null) return;
+            FejdStartup.m_instance.m_showChangelogButton.SetActive(shouldShowChangelog.Value == Toggle.On);
         }
 
         internal static void UpdateChangelogWidth(object sender, EventArgs e)
