@@ -1,6 +1,6 @@
 {
   "name": "ChangelogEditor",
-  "version_number": "1.1.1",
+  "version_number": "1.1.2",
   "website_url": "https://github.com/Wacky-Mole/ChangelogEditor",
   "description": "A simple mod that allows you to change the changelog text at the main menu, or hide it entirely.",
   "dependencies": [
