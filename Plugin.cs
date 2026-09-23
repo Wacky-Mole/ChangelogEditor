@@ -17,7 +17,7 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.1.2";
+        internal const string ModVersion = "1.1.3";
         internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -157,8 +157,8 @@ namespace ChangelogEditor
             }
             catch
             {
-                ChangelogEditorLogger.LogError($"There was an issue loading your {ConfigFileName}");
-                ChangelogEditorLogger.LogError("Please check your config entries for spelling and format!");
+                ChangelogEditorLogger.LogWarning($"There was an issue loading your {ContentFile}");
+                ChangelogEditorLogger.LogWarning("Please check your config entries for spelling and format!");
             }
         }
 

@@ -1,7 +1,6 @@
 | `Version`   | `Update Notes`                                                                                                                                                          |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1.1.3       | - Yep... Did an update                                                                                                                                                  |
-| 1.1.2       | - Changed a Read Error to Warning                                                                                                                                       |
+| 1.1.2       | - Changed an ReadError to Warning                                                                                                                                                    |
 | 1.1.1       | - Deep North Update                                                                                                                                                     |
 | 1.1.0       | - WackyMole Takeover                                                                                                                                                    |
 | 1.0.9       | - Compile against latest, just in case.                                                                                                                                 |
