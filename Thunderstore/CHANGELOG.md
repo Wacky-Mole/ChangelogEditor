@@ -1,5 +1,6 @@
 | `Version`   | `Update Notes`                                                                                                                                                          |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1.2.0       | - Rewrote ChangeLog UI for compatibility with other mods that change Menu UI                                                                                            |
 | 1.1.5       | - Added Force Show Changelog option                                                                                                                                     |
 | 1.1.4       | - Moved Some Stuff around						                                                                                                                        |
 | 1.1.3       | - Yep... Did an update                                                                                                                                                  |

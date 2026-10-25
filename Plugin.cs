@@ -9,7 +9,6 @@ using HarmonyLib;
 using JetBrains.Annotations;
 
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ChangelogEditor
 {
@@ -17,7 +16,7 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.1.5";
+        internal const string ModVersion = "1.2.0";
         internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -27,7 +26,6 @@ namespace ChangelogEditor
 
         internal static string ConnectionError = "";
         internal static string customFileText = "";
-        internal static GameObject ChangelogGameObject = null!;
 
         private readonly Harmony _harmony = new(ModGUID);
 
@@ -41,15 +39,14 @@ namespace ChangelogEditor
 
         public void Awake()
         {
-            shouldShowChangelog = config("1 - Changelog", "Should Show Changelog", Toggle.On, "If on, the changelog button will be shown in the main menu. If off, it will not be shown.");
-            shouldShowChangelog.SettingChanged += UpdateChangelogButton;
+            shouldShowChangelog = config("1 - Changelog", "Should Show Changelog", Toggle.On, "If on, the original changelog button will be shown in the main menu and opens the independent bottom-left changelog window. If off, the button will be hidden.");
             forceShowChangelog = config("1 - Changelog", "Force Show Changelog", Toggle.Off, "If on, automatically opens the changelog whenever the main menu starts, even if the changelog button is hidden. The changelog can still be closed normally. Changes apply the next time the main menu starts.");
             shouldChangeText = config("1 - Changelog", "Should Change Text", Toggle.On, $"If on, your configuration file's text will be added to the changelog. (at the top). This pulls from the {ContentFile} found in your config folder.");
             overrideText = config("1 - Changelog", "Override Changelog Text", Toggle.Off, "If on, only your custom text that is set will show in the changlog. This deletes the default changelog text.");
             topicText = TextEntryConfig("1 - Changelog", "Title Text", "Changelog", "Change the title text of the changelog. This is the text that shows up in the top of the changelog.");
             changelogWidth = config("1 - Changelog", "Width", 445f, "Width of the changelog window.");
-            //add a delegate to update the changelog width when the config is changed
-            changelogWidth.SettingChanged += UpdateChangelogWidth;
+            shouldChangeText.SettingChanged += UpdateChangelogContent;
+            overrideText.SettingChanged += UpdateChangelogContent;
 
 
             // Create the content file if not exist
@@ -57,10 +54,7 @@ namespace ChangelogEditor
             {
                 File.WriteAllText(ContentFileFullPath, $"This is the content file for ChangelogEditor. You can edit this file to change the changelog text.{Environment.NewLine}This file can be found currently at: {ContentFileFullPath}{Environment.NewLine}{Environment.NewLine}");
             }
-            else
-            {
-                customFileText = File.ReadAllText(ContentFileFullPath, Encoding.UTF8);
-            }
+            customFileText = File.ReadAllText(ContentFileFullPath, Encoding.UTF8);
 
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
@@ -70,34 +64,15 @@ namespace ChangelogEditor
         private void OnDestroy()
         {
             Config.Save();
-            shouldShowChangelog.SettingChanged -= UpdateChangelogButton;
-            changelogWidth.SettingChanged -= UpdateChangelogWidth;
+            shouldChangeText.SettingChanged -= UpdateChangelogContent;
+            overrideText.SettingChanged -= UpdateChangelogContent;
+            if (ChangelogWindow.Instance != null) Destroy(ChangelogWindow.Instance);
+            _harmony.UnpatchSelf();
         }
 
-        internal static void UpdateChangelogButton(object sender = null, EventArgs e = null)
+        internal static void UpdateChangelogContent(object sender = null, EventArgs e = null)
         {
-            if (FejdStartup.m_instance == null || FejdStartup.m_instance.m_showChangelogButton == null) return;
-            FejdStartup.m_instance.m_showChangelogButton.SetActive(shouldShowChangelog.Value == Toggle.On);
-        }
-
-        internal static void UpdateChangelogWidth(object sender, EventArgs e)
-        {
-            if (ChangelogGameObject == null) return;
-            RectTransform changelogRect = (RectTransform)ChangelogGameObject.transform;
-            RectTransform scrollPanelRect = (RectTransform)ChangelogGameObject.transform.Find("ScrollPanel");
-            RectTransform scrollBarRect = (RectTransform)ChangelogGameObject.transform.Find("PatchlogScroll");
-            var scrollPanelRectSizeDelta = scrollPanelRect.sizeDelta;
-            changelogRect.sizeDelta = new Vector2(changelogWidth.Value, scrollPanelRectSizeDelta.y);
-            scrollPanelRectSizeDelta = new Vector2(changelogWidth.Value, scrollPanelRectSizeDelta.y);
-            scrollPanelRect.sizeDelta = scrollPanelRectSizeDelta;
-            var anchoredPosition = scrollPanelRect.anchoredPosition;
-            scrollBarRect.anchoredPosition = new Vector2(anchoredPosition.x, anchoredPosition.y);
-            // Try to flip the scrollbar back to the left side of the changelog
-            scrollBarRect.anchorMin = new Vector2(0, 0);
-            scrollBarRect.anchorMax = new Vector2(0, 1);
-            scrollBarRect.pivot = new Vector2(0, 0.5f);
-            scrollBarRect.anchoredPosition = new Vector2(0, 0);
-            
+            if (ChangelogWindow.Instance != null) ChangelogWindow.Instance.RefreshContent();
         }
 
 
@@ -158,11 +133,7 @@ namespace ChangelogEditor
 
             try
             {
-                if (SceneManager.GetActiveScene().name == "main") return;
-                if (ChangelogGameObject == null) return;
-                ChangeLog changelog = ChangelogGameObject.GetComponent<ChangeLog>();
-                if (changelog != null)
-                    changelog.UpdateChangelog();
+                UpdateChangelogContent();
             }
             catch (Exception ex)
             {
