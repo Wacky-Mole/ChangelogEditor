@@ -9,9 +9,14 @@ namespace ChangelogEditor;
 [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Start))]
 static class FejdStartupStartPatch
 {
-    static void Postfix()
+    static void Postfix(FejdStartup __instance)
     {
         ChangelogEditorPlugin.UpdateChangelogButton();
+        if (ChangelogEditorPlugin.forceShowChangelog.Value != ChangelogEditorPlugin.Toggle.On) return;
+        if (__instance.m_showChangelogButton == null) return;
+        Button changelogButton = __instance.m_showChangelogButton.GetComponent<Button>();
+        if (changelogButton != null)
+            changelogButton.onClick.Invoke();
     }
 }
 

@@ -17,7 +17,7 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.1.4";
+        internal const string ModVersion = "1.1.5";
         internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -43,6 +43,7 @@ namespace ChangelogEditor
         {
             shouldShowChangelog = config("1 - Changelog", "Should Show Changelog", Toggle.On, "If on, the changelog button will be shown in the main menu. If off, it will not be shown.");
             shouldShowChangelog.SettingChanged += UpdateChangelogButton;
+            forceShowChangelog = config("1 - Changelog", "Force Show Changelog", Toggle.Off, "If on, automatically opens the changelog whenever the main menu starts, even if the changelog button is hidden. The changelog can still be closed normally. Changes apply the next time the main menu starts.");
             shouldChangeText = config("1 - Changelog", "Should Change Text", Toggle.On, $"If on, your configuration file's text will be added to the changelog. (at the top). This pulls from the {ContentFile} found in your config folder.");
             overrideText = config("1 - Changelog", "Override Changelog Text", Toggle.Off, "If on, only your custom text that is set will show in the changlog. This deletes the default changelog text.");
             topicText = TextEntryConfig("1 - Changelog", "Title Text", "Changelog", "Change the title text of the changelog. This is the text that shows up in the top of the changelog.");
@@ -174,6 +175,7 @@ namespace ChangelogEditor
 
         //private static ConfigEntry<Toggle> _serverConfigLocked = null!;
         internal static ConfigEntry<Toggle> shouldShowChangelog = null!;
+        internal static ConfigEntry<Toggle> forceShowChangelog = null!;
         internal static ConfigEntry<Toggle> shouldChangeText = null!;
         internal static ConfigEntry<Toggle> overrideText = null!;
         internal static ConfigEntry<string> topicText = null!;
