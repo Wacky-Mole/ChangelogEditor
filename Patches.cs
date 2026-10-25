@@ -28,9 +28,37 @@ static class ShowChangelogPatch
     }
 }
 
+[HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.LoadMainScene))]
+static class LoadingChangelogPatch
+{
+    static void Prefix(FejdStartup __instance)
+    {
+        ChangelogWindow window = __instance.GetComponent<ChangelogWindow>();
+        if (window != null) window.HideForLoading();
+    }
+}
+
+public sealed class ChangelogMenuVisibility : MonoBehaviour
+{
+    internal ChangelogWindow Window = null!;
+
+    private void OnEnable()
+    {
+        if (Window != null) Window.MenuVisibilityChanged(true);
+    }
+
+    private void OnDisable()
+    {
+        if (Window != null) Window.MenuVisibilityChanged(false);
+    }
+}
+
 public sealed class ChangelogWindow : MonoBehaviour
 {
     private FejdStartup _startup = null!;
+    private Transform _menuRoot = null!;
+    private ChangelogMenuVisibility _menuVisibility = null!;
+    private bool _loadingIntoGame;
     private GameObject _button = null!;
     private bool _originalButtonActive;
     private Button[] _menuButtons = Array.Empty<Button>();
@@ -47,6 +75,14 @@ public sealed class ChangelogWindow : MonoBehaviour
     internal void Initialize(FejdStartup startup)
     {
         _startup = startup;
+        _menuRoot = startup.transform.Find("Menu");
+        if (_menuRoot != null)
+        {
+            _menuVisibility = _menuRoot.GetComponent<ChangelogMenuVisibility>();
+            if (_menuVisibility == null)
+                _menuVisibility = _menuRoot.gameObject.AddComponent<ChangelogMenuVisibility>();
+            _menuVisibility.Window = this;
+        }
         Instance = this;
         _button = startup.m_showChangelogButton;
         if (_button != null)
@@ -66,11 +102,50 @@ public sealed class ChangelogWindow : MonoBehaviour
             break;
         }
         RefreshContent();
-        _visible = ChangelogEditorPlugin.forceShowChangelog.Value == ChangelogEditorPlugin.Toggle.On;
+        MenuVisibilityChanged(IsMainMenuVisible());
+    }
+
+    private bool IsMainMenuVisible()
+    {
+        return !_loadingIntoGame && _startup != null && (_menuRoot == null || _menuRoot.gameObject.activeInHierarchy);
+    }
+
+    internal void MenuVisibilityChanged(bool visible)
+    {
+        if (_startup == null) return;
+        if (visible && IsMainMenuVisible())
+            OpenForMainMenu();
+        else
+            _visible = false;
+    }
+
+    private void OnEnable()
+    {
+        MenuVisibilityChanged(IsMainMenuVisible());
+    }
+
+    private void OnDisable()
+    {
+        _visible = false;
+    }
+
+    internal void OpenForMainMenu()
+    {
+        if (_loadingIntoGame) return;
+        if (ChangelogEditorPlugin.forceShowChangelog.Value != ChangelogEditorPlugin.Toggle.On) return;
+        RefreshContent();
+        _visible = true;
+    }
+
+    internal void HideForLoading()
+    {
+        _loadingIntoGame = true;
+        _visible = false;
     }
 
     internal void Toggle()
     {
+        if (_loadingIntoGame) return;
         if (!_visible) RefreshContent();
         _visible = !_visible;
     }
@@ -118,7 +193,7 @@ public sealed class ChangelogWindow : MonoBehaviour
 
     private void OnGUI()
     {
-        if (_startup == null) return;
+        if (!IsMainMenuVisible()) return;
         if (_textStyle == null)
             _textStyle = new GUIStyle(GUI.skin.label) { richText = true, wordWrap = true, fontSize = 16 };
 
@@ -189,6 +264,11 @@ public sealed class ChangelogWindow : MonoBehaviour
     private void OnDestroy()
     {
         ChangelogEditorPlugin.shouldShowChangelog.SettingChanged -= UpdateButtonVisibility;
+        if (_menuVisibility != null)
+        {
+            _menuVisibility.Window = null!;
+            Destroy(_menuVisibility);
+        }
         if (_button != null) _button.SetActive(_originalButtonActive);
         if (ReferenceEquals(Instance, this)) Instance = null!;
         _startup = null!;

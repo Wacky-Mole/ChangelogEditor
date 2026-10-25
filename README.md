@@ -28,7 +28,7 @@ Use the original changelog button in the main menu. It opens a separate, scrolla
 Under `[1 - Changelog]`:
 
 - `Should Show Changelog` controls visibility of the original changelog button.
-- `Force Show Changelog` opens the independent window whenever the main-menu scene starts, even if the original button is hidden.
+- `Force Show Changelog` opens the independent window at startup and whenever you return to the main menu, even if the original button is hidden. Closing it keeps it closed until you open it manually or leave and return to the menu again.
 - `Should Change Text` adds custom text before the game's changelog; `Override Changelog Text` shows only custom text and takes precedence.
 - `Title Text` and `Width` control the window title and width. Width is limited to the screen size.
 

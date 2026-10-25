@@ -16,7 +16,7 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.2.0";
+        internal const string ModVersion = "1.2.1";
         internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -40,7 +40,7 @@ namespace ChangelogEditor
         public void Awake()
         {
             shouldShowChangelog = config("1 - Changelog", "Should Show Changelog", Toggle.On, "If on, the original changelog button will be shown in the main menu and opens the independent bottom-left changelog window. If off, the button will be hidden.");
-            forceShowChangelog = config("1 - Changelog", "Force Show Changelog", Toggle.Off, "If on, automatically opens the changelog whenever the main menu starts, even if the changelog button is hidden. The changelog can still be closed normally. Changes apply the next time the main menu starts.");
+            forceShowChangelog = config("1 - Changelog", "Force Show Changelog", Toggle.Off, "If on, automatically opens the changelog at startup and whenever you return to the main menu, even if the changelog button is hidden. The changelog can still be closed normally. Changes apply the next time you return to the main menu.");
             shouldChangeText = config("1 - Changelog", "Should Change Text", Toggle.On, $"If on, your configuration file's text will be added to the changelog. (at the top). This pulls from the {ContentFile} found in your config folder.");
             overrideText = config("1 - Changelog", "Override Changelog Text", Toggle.Off, "If on, only your custom text that is set will show in the changlog. This deletes the default changelog text.");
             topicText = TextEntryConfig("1 - Changelog", "Title Text", "Changelog", "Change the title text of the changelog. This is the text that shows up in the top of the changelog.");
