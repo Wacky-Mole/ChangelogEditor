@@ -17,7 +17,7 @@ namespace ChangelogEditor
     public class ChangelogEditorPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ChangelogEditor";
-        internal const string ModVersion = "1.1.3";
+        internal const string ModVersion = "1.1.4";
         internal const string Author = "WackyMole";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -135,10 +135,9 @@ namespace ChangelogEditor
                 ChangelogEditorLogger.LogDebug("ReadConfigValues called");
                 Config.Reload();
             }
-            catch
+            catch (Exception ex)
             {
-                ChangelogEditorLogger.LogWarning($"There was an issue loading your {ConfigFileName}");
-                ChangelogEditorLogger.LogWarning("Please check your config entries for spelling and format!");
+                ChangelogEditorLogger.LogWarning($"There was an issue reloading {ConfigFileFullPath}: {ex}");
             }
         }
 
@@ -149,16 +148,24 @@ namespace ChangelogEditor
             {
                 // Read the content file into a string that can be used later. Include UTF-8 formatting
                 customFileText = File.ReadAllText(ContentFileFullPath, Encoding.UTF8);
-
-                if (SceneManager.GetActiveScene().name == "main") return;
-                if (ChangelogGameObject.gameObject == null) return;
-                if (ChangelogGameObject.GetComponent<ChangeLog>())
-                    ChangelogGameObject.GetComponent<ChangeLog>().UpdateChangelog();
             }
-            catch
+            catch (Exception ex)
             {
-                ChangelogEditorLogger.LogWarning($"There was an issue loading your {ContentFile}");
-                ChangelogEditorLogger.LogWarning("Please check your config entries for spelling and format!");
+                ChangelogEditorLogger.LogWarning($"There was an issue reading {ContentFileFullPath}: {ex}");
+                return;
+            }
+
+            try
+            {
+                if (SceneManager.GetActiveScene().name == "main") return;
+                if (ChangelogGameObject == null) return;
+                ChangeLog changelog = ChangelogGameObject.GetComponent<ChangeLog>();
+                if (changelog != null)
+                    changelog.UpdateChangelog();
+            }
+            catch (Exception ex)
+            {
+                ChangelogEditorLogger.LogWarning($"Loaded {ContentFileFullPath}, but there was an issue updating the changelog UI: {ex}");
             }
         }
 
